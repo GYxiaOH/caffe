@@ -6,4 +6,4 @@ caffe with some things for my experiment(class  classification with clickture da
 ##Cosine Loss：
 'the objective function is definede as:'<br>
 Cosine Loss的目标函数定义如下：<br>
-![Image text](https://raw.github.com/yourName/repositpry/master/yourprojectName/img-folder/test.jpg)
+![Image text](caffe/CosineLoss.png)
