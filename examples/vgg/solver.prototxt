@@ -1,0 +1,16 @@
+net: "/home/camalab/caffe/models/vgg19/vggtrain_val.prototxt"
+test_iter: 190
+test_interval: 1600
+# lr for fine-tuning should be lower than when starting from scratch
+base_lr: 0.001
+lr_policy: "step"
+gamma: 0.1
+# decrease lr each 20000 iterations
+stepsize: 24000
+display: 20
+max_iter: 160000
+momentum: 0.9
+weight_decay: 0.0005
+snapshot: 10000
+snapshot_prefix: "/home/camalab/caffe/models/vgg19/model"
+solver_mode: GPU

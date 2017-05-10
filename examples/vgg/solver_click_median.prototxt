@@ -1,0 +1,14 @@
+net: "/home/fw092/ICME_Challenge_Data/vgg_model/prototxt_file/train_val_click_median.prototxt"
+test_iter: 200
+test_interval: 2000
+base_lr: 0.001
+lr_policy: "step"
+gamma: 0.1
+stepsize: 20000
+display: 20
+max_iter: 160000
+momentum: 0.9
+weight_decay: 0.0005
+snapshot: 20000
+snapshot_prefix: "/data5/fw092/model_file/vgg19_init_click_median"
+solver_mode: GPU

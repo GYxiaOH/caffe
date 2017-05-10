@@ -1,0 +1,5 @@
+1. train_val.prototxt 和 deploy.prototxt 是model zoo给出的链接里找到的官方的VGG模型，用的是layers写法（没怎么看到过），solver是在官方给的网页里有人给的
+
+2. vggdeploy是把layers换成layer的写法，目前没看出来和layers有什么区别
+
+3. train_val_click_median 和 solver_click_median是论文作者给的vgg模型和solver文件，相应的我作出了deploy
