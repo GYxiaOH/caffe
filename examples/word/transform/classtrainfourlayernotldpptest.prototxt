@@ -1,0 +1,33 @@
+layer {
+  name: "data"
+  type: "HDF5Data"
+
+
+  top: "typelabel"
+
+  include {
+    phase: TRAIN
+  }
+  hdf5_data_param {
+    source: "/media/camalab/DATADRIVE1/HDF5/dpp/val/val_h5_list.txt"
+    batch_size:10
+  }
+}
+
+layer {
+  name: "data"
+  type: "HDF5Data"
+  
+  top: "label"
+ 
+  include {
+    phase: TEST
+  }
+  hdf5_data_param {
+    source: "/media/camalab/DATADRIVE1/HDF5/dpp/train/train_h5_list.txt"
+    batch_size:1
+  }
+}
+
+
+

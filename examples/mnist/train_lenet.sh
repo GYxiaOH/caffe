@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 set -e
 
-./build/tools/caffe train --solver=examples/mnist/lenet_solver.prototxt $@
+/home/camalab/caffe/build/tools/caffe train --solver=/home/camalab/caffe/examples/mnist/lenet_solver.prototxt $@

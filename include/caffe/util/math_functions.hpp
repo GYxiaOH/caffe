@@ -109,12 +109,22 @@ Dtype caffe_cpu_strided_dot(const int n, const Dtype* x, const int incx,
 template <typename Dtype>
 Dtype caffe_cpu_asum(const int n, const Dtype* x);
 
+template <typename Dtype>
+Dtype caffe_cpu_abs_sum(const int n, const Dtype* x);
+
 // the branchless, type-safe version from
 // http://stackoverflow.com/questions/1903954/is-there-a-standard-sign-function-signum-sgn-in-c-c
 template<typename Dtype>
 inline int8_t caffe_sign(Dtype val) {
   return (Dtype(0) < val) - (val < Dtype(0));
 }
+
+template<typename Dtype>
+inline int8_t caffe_onezero(Dtype val) {
+  return (Dtype(0) < val);
+}
+
+
 
 // The following two macros are modifications of DEFINE_VSL_UNARY_FUNC
 //   in include/caffe/util/mkl_alternate.hpp authored by @Rowland Depp.
@@ -133,6 +143,9 @@ inline int8_t caffe_sign(Dtype val) {
 
 // output is 1 for the positives, 0 for zero, and -1 for the negatives
 DEFINE_CAFFE_CPU_UNARY_FUNC(sign, y[i] = caffe_sign<Dtype>(x[i]))
+
+// output is 1 for the positives, 0 for others
+DEFINE_CAFFE_CPU_UNARY_FUNC(onezero, y[i] = caffe_onezero<Dtype>(x[i]))
 
 // This returns a nonzero value if the input has its sign bit set.
 // The name sngbit is meant to avoid conflicts with std::signbit in the macro.
@@ -274,8 +287,13 @@ void caffe_gpu_dot(const int n, const Dtype* x, const Dtype* y, Dtype* out);
 template <typename Dtype>
 void caffe_gpu_asum(const int n, const Dtype* x, Dtype* y);
 
+
+
 template<typename Dtype>
 void caffe_gpu_sign(const int n, const Dtype* x, Dtype* y);
+
+template<typename Dtype>
+void caffe_gpu_onezero(const int n, const Dtype* x, Dtype* y);
 
 template<typename Dtype>
 void caffe_gpu_sgnbit(const int n, const Dtype* x, Dtype* y);

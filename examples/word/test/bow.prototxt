@@ -1,0 +1,71 @@
+name: "LogisticRegressionNet"
+layer {
+  name: "data"
+  type: "HDF5Data"
+  top: "label"
+  top: "typelabel"
+  include {
+    phase: TRAIN
+  }
+  hdf5_data_param {
+    source: "/media/ghat/新加卷/HDF5/zhy/train/train_h5_list.txt"
+    batch_size:32
+  }
+}
+
+layer {
+  name: "data"
+  type: "HDF5Data"
+  top: "label"
+  top: "typelabel"
+  include {
+    phase: TEST
+  }
+  hdf5_data_param {
+    source: "/media/ghat/新加卷/HDF5/zhy/train/train_h5_list.txt"
+    batch_size:100
+  }
+}
+
+layer {
+  name: "ip4"
+  type: "InnerProduct"
+  bottom: "label"
+  top: "ip4"
+    propagate_down : 0   
+  param {
+    lr_mult: 1
+  }
+  param {
+    lr_mult: 2
+  }
+  inner_product_param {
+    num_output: 283
+    weight_filler {
+      type: "xavier"
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+
+layer {
+  name: "accuracy"
+  type: "Accuracy"
+  bottom: "ip4"
+  bottom: "typelabel"
+  top: "accuracy"
+  include {
+    phase: TEST
+  }
+}
+
+layer {
+  name: "loss"
+  type: "SoftmaxWithLoss"
+  bottom: "ip4"
+  bottom: "typelabel"
+  top: "loss"
+}

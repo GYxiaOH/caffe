@@ -114,6 +114,12 @@ void caffe_scal<double>(const int N, const double alpha, double *X) {
   cblas_dscal(N, alpha, X, 1);
 }
 
+// new function by zhy
+
+
+
+// new function by zhy end
+
 template <>
 void caffe_cpu_strided_axpby<float>(const int N,
     const float alpha, const float* X, const int incx,
@@ -376,6 +382,17 @@ template <>
 double caffe_cpu_asum<double>(const int n, const double* x) {
   return cblas_dasum(n, x, 1);
 }
+
+template <>
+float caffe_cpu_abs_sum<float>(const int n, const float* x) {
+  return caffe_cpu_asum(n, x);
+}
+
+template <>
+double caffe_cpu_abs_sum<double>(const int n, const double* x) {
+  return caffe_cpu_asum(n, x);
+}
+
 
 template <>
 void caffe_cpu_scale<float>(const int n, const float alpha, const float *x,

@@ -1,0 +1,15 @@
+net: "/home/ghat/caffe/examples/word/notping.prototxt"
+test_iter:100
+test_interval: 500
+base_lr: 0.1 
+lr_policy: "step"
+gamma: 0.1
+stepsize: 40000
+display: 50
+max_iter: 150000
+momentum: 0.9
+weight_decay: 0.0005
+snapshot: 5000
+type: "SGD"
+snapshot_prefix: "/media/ghat/新加卷/wordmodel/notping/"
+solver_mode: GPU

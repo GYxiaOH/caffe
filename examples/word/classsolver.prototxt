@@ -1,0 +1,15 @@
+net: "/home/camalab/caffe/examples/word/classtrainfourlayernotldpp3.prototxt"
+test_iter:85
+test_interval: 400
+base_lr: 0.1
+lr_policy: "poly"
+power: 1
+stepsize: 12000
+display: 50
+max_iter: 1
+momentum: 0.9
+weight_decay: 0.0005
+snapshot: 5000
+type: "SGD"
+snapshot_prefix: "/media/camalab/DATADRIVE1/wordmodel/L1/"
+solver_mode: GPU

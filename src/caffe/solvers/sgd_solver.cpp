@@ -146,9 +146,12 @@ void SGDSolver<Dtype>::Regularize(int param_id) {
   const vector<Blob<Dtype>*>& net_params = this->net_->learnable_params();
   const vector<float>& net_params_weight_decay =
       this->net_->params_weight_decay();
+  const vector<float>& net_params_lone_weight_decay =
+      this->net_->params_lone_weight_decay();
   Dtype weight_decay = this->param_.weight_decay();
   string regularization_type = this->param_.regularization_type();
   Dtype local_decay = weight_decay * net_params_weight_decay[param_id];
+  Dtype lone_local_decay = weight_decay * net_params_lone_weight_decay[param_id];
   switch (Caffe::mode()) {
   case Caffe::CPU: {
     if (local_decay) {
@@ -166,6 +169,20 @@ void SGDSolver<Dtype>::Regularize(int param_id) {
             local_decay,
             temp_[param_id]->cpu_data(),
             net_params[param_id]->mutable_cpu_diff());
+      } else if (regularization_type == "L3"){
+	LOG(INFO) << " lone_local_decay number: " << lone_local_decay;
+	LOG(INFO) << " local_decay number: " << local_decay;
+        caffe_axpy(net_params[param_id]->count(),
+            local_decay,
+            net_params[param_id]->cpu_data(),
+            net_params[param_id]->mutable_cpu_diff());
+	 caffe_cpu_sign(net_params[param_id]->count(),
+            net_params[param_id]->cpu_data(),
+            temp_[param_id]->mutable_cpu_data());
+         caffe_axpy(net_params[param_id]->count(),
+            lone_local_decay,
+            temp_[param_id]->cpu_data(),
+            net_params[param_id]->mutable_cpu_diff());
       } else {
         LOG(FATAL) << "Unknown regularization type: " << regularization_type;
       }
@@ -174,7 +191,7 @@ void SGDSolver<Dtype>::Regularize(int param_id) {
   }
   case Caffe::GPU: {
 #ifndef CPU_ONLY
-    if (local_decay) {
+    if (local_decay ||lone_local_decay) {
       if (regularization_type == "L2") {
         // add weight decay
         caffe_gpu_axpy(net_params[param_id]->count(),
@@ -187,6 +204,20 @@ void SGDSolver<Dtype>::Regularize(int param_id) {
             temp_[param_id]->mutable_gpu_data());
         caffe_gpu_axpy(net_params[param_id]->count(),
             local_decay,
+            temp_[param_id]->gpu_data(),
+            net_params[param_id]->mutable_gpu_diff());
+      } else if (regularization_type == "L3"){
+	LOG(INFO) << " lone_local_decay number: " << lone_local_decay;
+	LOG(INFO) << " local_decay number: " << local_decay;
+         caffe_gpu_axpy(net_params[param_id]->count(),
+            local_decay,
+            net_params[param_id]->gpu_data(),
+            net_params[param_id]->mutable_gpu_diff());
+	 caffe_gpu_sign(net_params[param_id]->count(),
+            net_params[param_id]->gpu_data(),
+            temp_[param_id]->mutable_gpu_data());
+         caffe_gpu_axpy(net_params[param_id]->count(),
+            lone_local_decay,
             temp_[param_id]->gpu_data(),
             net_params[param_id]->mutable_gpu_diff());
       } else {
