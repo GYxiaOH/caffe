@@ -1,40 +1,45 @@
 #include <vector>
 
-#include "caffe/layers/euclidean_loss_layer.hpp"
+#include "caffe/layers/hamming_loss_layer.hpp"
 #include "caffe/util/math_functions.hpp"
 
 namespace caffe {
 
 template <typename Dtype>
-void EuclideanLossLayer<Dtype>::Reshape(
+void HammingLossLayer<Dtype>::Reshape(
   const vector<Blob<Dtype>*>& bottom, const vector<Blob<Dtype>*>& top) {
   LossLayer<Dtype>::Reshape(bottom, top);
   CHECK_EQ(bottom[0]->count(1), bottom[1]->count(1))
       << "Inputs must have the same dimension.";
   diff_.ReshapeLike(*bottom[0]);
+  diff1_.ReshapeLike(*bottom[0]);
 }
 
 template <typename Dtype>
-void EuclideanLossLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
+void HammingLossLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
     const vector<Blob<Dtype>*>& top) {
   int count = bottom[0]->count();
+  const Dtype* bottom_data1 = bottom[0]->cpu_data();
+  const Dtype* bottom_data2 = bottom[1]->cpu_data();
+  caffe_cpu_onezero(count, bottom_data1, diff_.mutable_cpu_data());
+  caffe_cpu_onezero(count, bottom_data2, diff1_.mutable_cpu_data());
   caffe_sub(
       count,
-      bottom[0]->cpu_data(),
-      bottom[1]->cpu_data(),
+      diff_.cpu_data(),
+      diff1_.cpu_data(),
       diff_.mutable_cpu_data());
-  Dtype dot = caffe_cpu_dot(count, diff_.cpu_data(), diff_.cpu_data());
-  Dtype loss = dot / bottom[0]->num() / Dtype(2);
+  Dtype abssum = caffe_cpu_abs_sum(count,diff_.cpu_data());
+  caffe_abs(count, diff_.cpu_data(), diff_.mutable_cpu_data());
+  Dtype loss = abssum/bottom[0]->num();
   top[0]->mutable_cpu_data()[0] = loss;
 }
 
 template <typename Dtype>
-void EuclideanLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
+void HammingLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
     const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
   for (int i = 0; i < 2; ++i) {
     if (propagate_down[i]) {
-      const Dtype sign = (i == 0) ? 1 : -1;
-      const Dtype alpha = sign * top[0]->cpu_diff()[0] / bottom[i]->num(); //loss_weight/n
+      const Dtype alpha = top[0]->cpu_diff()[0] / bottom[i]->num(); //loss_weight/n
       caffe_cpu_axpby(
           bottom[i]->count(),              // count
           alpha,                              // alpha
@@ -46,10 +51,10 @@ void EuclideanLossLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
 }
 
 #ifdef CPU_ONLY
-STUB_GPU(EuclideanLossLayer);
+STUB_GPU(HammingLossLayer);
 #endif
 
-INSTANTIATE_CLASS(EuclideanLossLayer);
-REGISTER_LAYER_CLASS(EuclideanLoss);
+INSTANTIATE_CLASS(HammingLossLayer);
+REGISTER_LAYER_CLASS(HammingLoss);
 
 }  // namespace caffe
